@@ -13,7 +13,9 @@ type Product struct {
 	ImageUrl    string  `gorm:"type:text"`
 	Price       float64 `gorm:"not null"`
 	Stock       int     `gorm:"not null"`
+	ShopID      uint    `gorm:"not null"`
 	Category    string  `gorm:"not null"`
 	CreatedAt   time.Time
+	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
 }

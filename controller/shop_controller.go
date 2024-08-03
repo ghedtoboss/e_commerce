@@ -5,8 +5,10 @@ import (
 	"e_commerce/models"
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 )
 
@@ -51,6 +53,60 @@ func CreateShop(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Shop created successfully."})
+}
+
+// GetShop godoc
+// @Summary Get shop information
+// @Description Get information of a shop by shop ID
+// @Tags Shop
+// @Produce  json
+// @Param   shop_id path int true "Shop ID"
+// @Success 200 {object} models.Shop
+// @Failure 400 {string} string "Invalid shop id"
+// @Failure 404 {string} string "Shop not found"
+// @Router /shops/{shop_id} [get]
+func GetShop(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	shopID, err := strconv.Atoi(params["shop_id"])
+	if err != nil {
+		http.Error(w, "Invalid shop id.", http.StatusBadRequest)
+		return
+	}
+
+	var shop models.Shop
+	if result := database.DB.First(&shop, shopID); result.Error != nil {
+		http.Error(w, "Shop not found.", http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(shop)
+}
+
+// GetMyShop godoc
+// @Summary Get my shop information
+// @Description Get information of the logged-in user's shop
+// @Tags Shop
+// @Produce  json
+// @Success 200 {object} models.Shop
+// @Failure 404 {string} string "Shop not found"
+// @Failure 500 {string} string "Failed to retrieve shop"
+// @Router /shops/my [get]
+func GetMyShop(w http.ResponseWriter, r *http.Request) {
+	claims := r.Context().Value("user").(models.Claims)
+
+	var shop models.Shop
+	if result := database.DB.Where("owner_id = ?", claims.UserID).First(&shop); result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			http.Error(w, "Shop not found.", http.StatusNotFound)
+		} else {
+			http.Error(w, "Failed to retrieve shop.", http.StatusInternalServerError)
+		}
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(shop)
 }
 
 // UpdateShop godoc
