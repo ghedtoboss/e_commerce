@@ -22,6 +22,15 @@ func InitRoutes() *mux.Router {
 
 	r.Handle("/shop", middleware.JWTAuth(middleware.Authorize("seller")(http.HandlerFunc(controller.CreateShop)))).Methods("POST")
 	r.Handle("/shop", middleware.JWTAuth(middleware.Authorize("seller")(http.HandlerFunc(controller.UpdateShop)))).Methods("PUT")
+	r.Handle("/shop/{shop_id}", middleware.JWTAuth(http.HandlerFunc(controller.GetShop))).Methods("GET")
+	r.Handle("/shop/my-shop", middleware.JWTAuth(http.HandlerFunc(controller.GetMyShop))).Methods("GET")
+
+	r.Handle("/product", middleware.JWTAuth(http.HandlerFunc(controller.AddProduct))).Methods("POST")
+	r.Handle("/product/{product_id}", middleware.JWTAuth(http.HandlerFunc(controller.UpdateProduct))).Methods("PUT")
+	r.Handle("/product/{product_id}", middleware.JWTAuth(http.HandlerFunc(controller.GetProduct))).Methods("GET")
+	r.Handle("/product", middleware.JWTAuth(http.HandlerFunc(controller.GetProducts))).Methods("GET")
+	r.Handle("/product/{shop_id}", middleware.JWTAuth(http.HandlerFunc(controller.GetProductsByShop))).Methods("GET")
+	r.Handle("/product/my-products", middleware.JWTAuth(http.HandlerFunc(controller.GetProductsByMyShop))).Methods("GET")
 
 	r.PathPrefix("/swagger/").Handler(httpSwagger.Handler(
 		httpSwagger.URL("http://localhost:8080/docs/swagger.json"), // The url pointing to API definition

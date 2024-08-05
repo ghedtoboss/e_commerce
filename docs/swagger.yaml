@@ -18,6 +18,10 @@ definitions:
         example: old_password123
         type: string
     type: object
+  models.Product:
+    type: object
+  models.Shop:
+    type: object
   models.User:
     type: object
 host: localhost:8080
@@ -34,6 +38,253 @@ info:
   title: E-Commerce API
   version: "1.0"
 paths:
+  /myshop/products:
+    get:
+      description: Get the details of all products for the logged-in user's shop
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+        "404":
+          description: Shop or products not found
+          schema:
+            type: string
+      summary: Get products by the logged-in user's shop
+      tags:
+      - Products
+  /products:
+    get:
+      description: Get the details of all products
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+        "404":
+          description: Products not found
+          schema:
+            type: string
+      summary: Get all products
+      tags:
+      - Products
+    post:
+      consumes:
+      - application/json
+      description: Add a new product to the shop of the logged-in user
+      parameters:
+      - description: Product details
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.Product'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Product'
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "404":
+          description: Shop not found
+          schema:
+            type: string
+        "500":
+          description: Failed to create product
+          schema:
+            type: string
+      summary: Add a new product
+      tags:
+      - Products
+  /products/{product_id}:
+    get:
+      description: Get the details of a product by its ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Product'
+        "400":
+          description: Invalid id
+          schema:
+            type: string
+        "404":
+          description: Product not found
+          schema:
+            type: string
+      summary: Get a product by ID
+      tags:
+      - Products
+    put:
+      consumes:
+      - application/json
+      description: Update the details of an existing product
+      parameters:
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: integer
+      - description: Updated product details
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.Product'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product updated successfully.
+          schema:
+            type: string
+        "400":
+          description: Invalid id or input
+          schema:
+            type: string
+        "404":
+          description: Product not found
+          schema:
+            type: string
+        "500":
+          description: Failed to update product
+          schema:
+            type: string
+      summary: Update an existing product
+      tags:
+      - Products
+  /shops:
+    post:
+      consumes:
+      - application/json
+      description: Create a new shop for the logged-in seller
+      parameters:
+      - description: Shop
+        in: body
+        name: shop
+        required: true
+        schema:
+          $ref: '#/definitions/models.Shop'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Shop created successfully
+          schema:
+            type: string
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "500":
+          description: Failed to create shop
+          schema:
+            type: string
+      summary: Create a new shop
+      tags:
+      - Shop
+    put:
+      consumes:
+      - application/json
+      description: Update the information of the logged-in user's shop
+      parameters:
+      - description: Shop
+        in: body
+        name: shop
+        required: true
+        schema:
+          $ref: '#/definitions/models.Shop'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Shop updated successfully
+          schema:
+            type: string
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "404":
+          description: Shop not found
+          schema:
+            type: string
+        "500":
+          description: Failed to update shop
+          schema:
+            type: string
+      summary: Update shop information
+      tags:
+      - Shop
+  /shops/{shop_id}:
+    get:
+      description: Get information of a shop by shop ID
+      parameters:
+      - description: Shop ID
+        in: path
+        name: shop_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Shop'
+        "400":
+          description: Invalid shop id
+          schema:
+            type: string
+        "404":
+          description: Shop not found
+          schema:
+            type: string
+      summary: Get shop information
+      tags:
+      - Shop
+  /shops/my:
+    get:
+      description: Get information of the logged-in user's shop
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Shop'
+        "404":
+          description: Shop not found
+          schema:
+            type: string
+        "500":
+          description: Failed to retrieve shop
+          schema:
+            type: string
+      summary: Get my shop information
+      tags:
+      - Shop
   /users/{id}:
     delete:
       description: Delete a user by ID
