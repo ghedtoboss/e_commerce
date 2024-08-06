@@ -4,6 +4,7 @@ import (
 	"e_commerce/database"
 	"e_commerce/models"
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -24,7 +25,7 @@ import (
 // @Failure 500 {string} string "Failed to create product"
 // @Router /products [post]
 func AddProduct(w http.ResponseWriter, r *http.Request) {
-	claims := r.Context().Value("user").(models.Claims)
+	claims := r.Context().Value("user").(*models.Claims)
 
 	var product models.Product
 	err := json.NewDecoder(r.Body).Decode(&product)
@@ -186,6 +187,7 @@ func GetProductsByShop(w http.ResponseWriter, r *http.Request) {
 // @Failure 404 {string} string "Shop or products not found"
 // @Router /myshop/products [get]
 func GetProductsByMyShop(w http.ResponseWriter, r *http.Request) {
+	log.Println("fonksiyon çalıştı.")
 	claims := r.Context().Value("user").(models.Claims)
 
 	var shop models.Shop

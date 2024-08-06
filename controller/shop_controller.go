@@ -24,14 +24,11 @@ import (
 // @Failure 500 {string} string "Failed to create shop"
 // @Router /shops [post]
 func CreateShop(w http.ResponseWriter, r *http.Request) {
-	claims := r.Context().Value("user").(models.Claims)
+	claims := r.Context().Value("user").(*models.Claims)
 
 	var existingShop models.Shop
 	if result := database.DB.Where("owner_id = ?", claims.UserID).First(&existingShop); result.Error == nil {
 		http.Error(w, "You already have a shop.", http.StatusBadRequest)
-		return
-	} else if result.Error != gorm.ErrRecordNotFound {
-		http.Error(w, "Failed to check existing shop.", http.StatusInternalServerError)
 		return
 	}
 
@@ -93,7 +90,11 @@ func GetShop(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {string} string "Failed to retrieve shop"
 // @Router /shops/my [get]
 func GetMyShop(w http.ResponseWriter, r *http.Request) {
-	claims := r.Context().Value("user").(models.Claims)
+	claims, ok := r.Context().Value("user").(*models.Claims)
+	if !ok || claims == nil {
+		http.Error(w, "Unauthorized access or claims missing.", http.StatusUnauthorized)
+		return
+	}
 
 	var shop models.Shop
 	if result := database.DB.Where("owner_id = ?", claims.UserID).First(&shop); result.Error != nil {
@@ -122,7 +123,7 @@ func GetMyShop(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {string} string "Failed to update shop"
 // @Router /shops [put]
 func UpdateShop(w http.ResponseWriter, r *http.Request) {
-	claims := r.Context().Value("user").(models.Claims)
+	claims := r.Context().Value("user").(*models.Claims)
 
 	var shop models.Shop
 	if result := database.DB.Where("owner_id = ?", claims.UserID).First(&shop); result.Error != nil {

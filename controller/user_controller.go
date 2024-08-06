@@ -22,11 +22,15 @@ import (
 // @Failure 404 {string} string "User not found"
 // @Router /users/profile [get]
 func GetProfile(w http.ResponseWriter, r *http.Request) {
-	claims := r.Context().Value("user").(*models.Claims)
+	claims, ok := r.Context().Value("user").(*models.Claims)
+	if !ok || claims == nil {
+		http.Error(w, "Unauthorized access or claims missing.", http.StatusUnauthorized)
+		return
+	}
 
 	var user models.User
-	if result := database.DB.First(&user, claims.UserID); result != nil {
-		http.Error(w, "User not found.", http.StatusNotFound)
+	if result := database.DB.First(&user, claims.UserID); result.Error != nil {
+		http.Error(w, "User not found."+result.Error.Error(), http.StatusNotFound)
 		return
 	}
 
@@ -89,7 +93,7 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {string} string "Internal server error"
 // @Router /users/profile/password [put]
 func UpdatePassword(w http.ResponseWriter, r *http.Request) {
-	claims := r.Context().Value("user").(models.Claims)
+	claims := r.Context().Value("user").(*models.Claims)
 
 	var user models.User
 	if result := database.DB.First(&user, claims.UserID); result.Error != nil {
@@ -107,7 +111,8 @@ func UpdatePassword(w http.ResponseWriter, r *http.Request) {
 	oldPass := passwordData["old_password"]
 	newPass := passwordData["new_password"]
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(oldPass)); err != nil {
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(oldPass))
+	if err != nil {
 		http.Error(w, "Old password is incorrect.", http.StatusUnauthorized)
 		return
 	}

@@ -53,6 +53,8 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	json.NewEncoder(w).Encode(map[string]string{"message": "User registered successfully."})
+
 }
 
 // LoginHandler godoc
