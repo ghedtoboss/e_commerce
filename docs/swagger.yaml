@@ -9,6 +9,30 @@ definitions:
         example: password123
         type: string
     type: object
+  models.OrderItem:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      orderID:
+        description: Bağlı olduğu sipariş
+        type: integer
+      price:
+        description: Birim fiyat
+        type: number
+      productID:
+        description: Ürün kimliği
+        type: integer
+      quantity:
+        description: Miktar
+        type: integer
+      total:
+        description: Toplam fiyat
+        type: number
+      updatedAt:
+        type: string
+    type: object
   models.PasswordUpdateRequest:
     properties:
       new_password:
@@ -57,6 +81,52 @@ paths:
       summary: Get products by the logged-in user's shop
       tags:
       - Products
+  /orders/{product_id}:
+    post:
+      consumes:
+      - application/json
+      description: Create a new order for a product with the specified quantity
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: integer
+      - description: Order Item
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.OrderItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Order created successfully
+          schema:
+            type: string
+        "400":
+          description: Invalid id" / "Invalid input" / "Not available in the required
+            quantity
+          schema:
+            type: string
+        "404":
+          description: Product not found
+          schema:
+            type: string
+        "500":
+          description: Failed to create order" / "Failed to create order item" / "Failed
+            to begin transaction" / "Failed to commit transaction
+          schema:
+            type: string
+      summary: Create a new order
+      tags:
+      - Orders
   /products:
     get:
       description: Get the details of all products

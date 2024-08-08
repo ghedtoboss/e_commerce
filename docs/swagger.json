@@ -47,6 +47,72 @@
                 }
             }
         },
+        "/orders/{product_id}": {
+            "post": {
+                "description": "Create a new order for a product with the specified quantity",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Create a new order",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Product ID",
+                        "name": "product_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Order Item",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.OrderItem"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Order created successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid id\" / \"Invalid input\" / \"Not available in the required quantity",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to create order\" / \"Failed to create order item\" / \"Failed to begin transaction\" / \"Failed to commit transaction",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/products": {
             "get": {
                 "description": "Get the details of all products",
@@ -704,6 +770,40 @@
                 "password": {
                     "type": "string",
                     "example": "password123"
+                }
+            }
+        },
+        "models.OrderItem": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "orderID": {
+                    "description": "Bağlı olduğu sipariş",
+                    "type": "integer"
+                },
+                "price": {
+                    "description": "Birim fiyat",
+                    "type": "number"
+                },
+                "productID": {
+                    "description": "Ürün kimliği",
+                    "type": "integer"
+                },
+                "quantity": {
+                    "description": "Miktar",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "Toplam fiyat",
+                    "type": "number"
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         },

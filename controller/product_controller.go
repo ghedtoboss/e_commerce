@@ -188,7 +188,7 @@ func GetProductsByShop(w http.ResponseWriter, r *http.Request) {
 // @Router /myshop/products [get]
 func GetProductsByMyShop(w http.ResponseWriter, r *http.Request) {
 	log.Println("fonksiyon çalıştı.")
-	claims := r.Context().Value("user").(models.Claims)
+	claims := r.Context().Value("user").(*models.Claims)
 
 	var shop models.Shop
 	if result := database.DB.Where("owner_id = ?", claims.UserID).First(&shop); result.Error != nil {
