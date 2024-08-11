@@ -81,6 +81,47 @@ paths:
       summary: Get products by the logged-in user's shop
       tags:
       - Products
+  /orders/{order_id}/status:
+    put:
+      consumes:
+      - application/json
+      description: Updates the status of an order by its ID
+      parameters:
+      - description: Order ID
+        in: path
+        name: order_id
+        required: true
+        type: integer
+      - description: Order Status Update
+        in: body
+        name: body
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Order status updated successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid id" / "Invalid input
+          schema:
+            type: string
+        "404":
+          description: Order not found
+          schema:
+            type: string
+        "500":
+          description: Failed to update order status
+          schema:
+            type: string
+      summary: Update the status of an order
+      tags:
+      - Orders
   /orders/{product_id}:
     post:
       consumes:

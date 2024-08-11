@@ -64,21 +64,18 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	order.CreatedAt = time.Now()
 	order.UpdatedAt = time.Now()
 
-	// Veritabanı işlemi (transaction) başlatma
 	tx := database.DB.Begin()
 	if tx.Error != nil {
 		http.Error(w, "Failed to begin transaction."+tx.Error.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Siparişi oluşturma
 	if result := tx.Create(&order); result.Error != nil {
 		tx.Rollback()
 		http.Error(w, "Failed to create order."+result.Error.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Sipariş öğesini oluşturma
 	orderItem.OrderID = order.ID
 	if result := tx.Create(&orderItem); result.Error != nil {
 		tx.Rollback()
@@ -86,7 +83,6 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Transaction'ı commit etme (işlemi tamamla)
 	if tx.Commit().Error != nil {
 		http.Error(w, "Failed to commit transaction.", http.StatusInternalServerError)
 		return
@@ -94,4 +90,57 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Order created successfully."})
+}
+
+// UpdateOrderStatus godoc
+// @Summary Update the status of an order
+// @Description Updates the status of an order by its ID
+// @Tags Orders
+// @Accept  json
+// @Produce  json
+// @Param   order_id path int true "Order ID"
+// @Param   body body object true "Order Status Update"
+// @Success 200 {object} map[string]string "Order status updated successfully"
+// @Failure 400 {string} string "Invalid id" / "Invalid input"
+// @Failure 404 {string} string "Order not found"
+// @Failure 500 {string} string "Failed to update order status"
+// @Router /orders/{order_id}/status [put]
+func UpdateOrderStatus(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	orderID, err := strconv.Atoi(params["order_id"])
+	if err != nil {
+		http.Error(w, "Invalid id.", http.StatusBadRequest)
+		return
+	}
+
+	var input struct {
+		Status string `json:"status"`
+	}
+
+	err = json.NewDecoder(r.Body).Decode(&input)
+	if err != nil {
+		http.Error(w, "Invalid input.", http.StatusBadRequest)
+		return
+	}
+
+	tx := database.DB.Begin()
+
+	var order models.Order
+	if result := tx.First(&order, orderID); result.Error != nil {
+		tx.Rollback()
+		http.Error(w, "Order not found.", http.StatusNotFound)
+		return
+	}
+
+	order.Status = input.Status
+
+	if result := tx.Save(&order); result.Error != nil {
+		tx.Rollback()
+		http.Error(w, "Failed to update order status.", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Order status update successfully."})
+
 }
