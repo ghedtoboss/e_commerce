@@ -23,7 +23,7 @@ import (
 // @Failure 400 {string} string "Invalid input"
 // @Failure 404 {string} string "Shop not found"
 // @Failure 500 {string} string "Failed to create product"
-// @Router /products [post]
+// @Router /product [post]
 func AddProduct(w http.ResponseWriter, r *http.Request) {
 	claims := r.Context().Value("user").(*models.Claims)
 
@@ -65,7 +65,7 @@ func AddProduct(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 {string} string "Invalid id or input"
 // @Failure 404 {string} string "Product not found"
 // @Failure 500 {string} string "Failed to update product"
-// @Router /products/{product_id} [put]
+// @Router /product/{product_id} [put]
 func UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	productID, err := strconv.Atoi(params["product_id"])
@@ -113,7 +113,7 @@ func UpdateProduct(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Product
 // @Failure 400 {string} string "Invalid id"
 // @Failure 404 {string} string "Product not found"
-// @Router /products/{product_id} [get]
+// @Router /product/{product_id} [get]
 func GetProduct(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	productID, err := strconv.Atoi(params["product_id"])
@@ -139,7 +139,7 @@ func GetProduct(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Success 200 {array} models.Product
 // @Failure 404 {string} string "Products not found"
-// @Router /products [get]
+// @Router /product [get]
 func GetProducts(w http.ResponseWriter, r *http.Request) {
 	var products []models.Product
 	if result := database.DB.Find(&products); result.Error != nil {
@@ -160,6 +160,7 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} models.Product
 // @Failure 400 {string} string "Invalid id"
 // @Failure 404 {string} string "Products not
+// @Router /product/{shop_id}/products [get]
 func GetProductsByShop(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	shopID, err := strconv.Atoi(params["shop_id"])
@@ -185,7 +186,7 @@ func GetProductsByShop(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Success 200 {array} models.Product
 // @Failure 404 {string} string "Shop or products not found"
-// @Router /myshop/products [get]
+// @Router /product/my-products [get]
 func GetProductsByMyShop(w http.ResponseWriter, r *http.Request) {
 	log.Println("fonksiyon çalıştı.")
 	claims := r.Context().Value("user").(*models.Claims)

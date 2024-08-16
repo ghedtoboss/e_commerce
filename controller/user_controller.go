@@ -143,7 +143,7 @@ func UpdatePassword(w http.ResponseWriter, r *http.Request) {
 // @Success 204 {string} string "User deleted successfully"
 // @Failure 400 {string} string "Invalid ID"
 // @Failure 404 {string} string "User not found"
-// @Router /users/{id} [delete]
+// @Router /users/{id}/delete [delete]
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	userID, err := strconv.Atoi(params["user_id"])

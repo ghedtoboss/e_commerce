@@ -24,35 +24,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/myshop/products": {
-            "get": {
-                "description": "Get the details of all products for the logged-in user's shop",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Products"
-                ],
-                "summary": "Get products by the logged-in user's shop",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Product"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Shop or products not found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/orders/{order_id}/status": {
             "put": {
                 "description": "Updates the status of an order by its ID",
@@ -181,7 +152,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/products": {
+        "/product": {
             "get": {
                 "description": "Get the details of all products",
                 "produces": [
@@ -260,7 +231,36 @@ const docTemplate = `{
                 }
             }
         },
-        "/products/{product_id}": {
+        "/product/my-products": {
+            "get": {
+                "description": "Get the details of all products for the logged-in user's shop",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Get products by the logged-in user's shop",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Product"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Shop or products not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/product/{product_id}": {
             "get": {
                 "description": "Get the details of a product by its ID",
                 "produces": [
@@ -358,7 +358,51 @@ const docTemplate = `{
                 }
             }
         },
-        "/shops": {
+        "/product/{shop_id}/products": {
+            "get": {
+                "description": "Get the details of all products for a specific shop",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Get products by shop ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Shop ID",
+                        "name": "shop_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Product"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid id",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Products not",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/shop": {
             "put": {
                 "description": "Update the information of the logged-in user's shop",
                 "consumes": [
@@ -454,7 +498,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/shops/my": {
+        "/shop/my": {
             "get": {
                 "description": "Get information of the logged-in user's shop",
                 "produces": [
@@ -486,7 +530,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/shops/{shop_id}": {
+        "/shop/{shop_id}": {
             "get": {
                 "description": "Get information of a shop by shop ID",
                 "produces": [
@@ -788,7 +832,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}": {
+        "/users/{id}/delete": {
             "delete": {
                 "description": "Delete a user by ID",
                 "tags": [

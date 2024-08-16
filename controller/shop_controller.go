@@ -22,7 +22,7 @@ import (
 // @Success 201 {string} string "Shop created successfully"
 // @Failure 400 {string} string "Invalid input"
 // @Failure 500 {string} string "Failed to create shop"
-// @Router /shops [post]
+// @Router /shop [post]
 func CreateShop(w http.ResponseWriter, r *http.Request) {
 	claims := r.Context().Value("user").(*models.Claims)
 
@@ -61,7 +61,7 @@ func CreateShop(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Shop
 // @Failure 400 {string} string "Invalid shop id"
 // @Failure 404 {string} string "Shop not found"
-// @Router /shops/{shop_id} [get]
+// @Router /shop/{shop_id} [get]
 func GetShop(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	shopID, err := strconv.Atoi(params["shop_id"])
@@ -88,7 +88,7 @@ func GetShop(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Shop
 // @Failure 404 {string} string "Shop not found"
 // @Failure 500 {string} string "Failed to retrieve shop"
-// @Router /shops/my [get]
+// @Router /shop/my [get]
 func GetMyShop(w http.ResponseWriter, r *http.Request) {
 	claims, ok := r.Context().Value("user").(*models.Claims)
 	if !ok || claims == nil {
@@ -121,7 +121,7 @@ func GetMyShop(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 {string} string "Invalid input"
 // @Failure 404 {string} string "Shop not found"
 // @Failure 500 {string} string "Failed to update shop"
-// @Router /shops [put]
+// @Router /shop [put]
 func UpdateShop(w http.ResponseWriter, r *http.Request) {
 	claims := r.Context().Value("user").(*models.Claims)
 

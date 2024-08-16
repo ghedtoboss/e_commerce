@@ -26,4 +26,5 @@ func Migrate() {
 	DB.AutoMigrate(&models.Product{})
 	DB.AutoMigrate(&models.Order{})
 	DB.AutoMigrate(&models.OrderItem{})
+	DB.AutoMigrate(&models.RefreshToken{})
 }
